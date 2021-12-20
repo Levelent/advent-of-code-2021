@@ -9,13 +9,20 @@ fn main() -> () {
     for draw in draws {
         for mut card in &mut bingo_cards {
             modify_card(&mut card, draw);
-
-            // Calculate total and exit upon first bingo
-            if check_bingo(&card) {
-                println!("{}", draw * unmarked_total(&card));
-                process::exit(0);
-            }
         }
+
+        // Filter out all cards that have bingo'ed this call
+        let new_cards = bingo_cards.clone().into_iter()
+        .filter(|card| !check_bingo(&card))
+        .collect::<Vec<_>>();
+
+        // If all cards have bingo'ed, get the total of the only card remaining.
+        if new_cards.is_empty() {
+            println!("{}", draw * unmarked_total(&bingo_cards[0]));
+            process::exit(0);
+        }
+
+        bingo_cards = new_cards;
     }
 }
 
