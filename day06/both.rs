@@ -11,8 +11,12 @@ fn main() -> () {
         timers.push(initial.iter().filter(|x| **x == i).count());
     }
 
-    // Apply reproduction steps 256 times
-    for _ in 0..256 {
+    // Apply reproduction steps 80 times, then continue to 256 times
+    for j in 0..256 {
+        if j == 80 {
+            let num1 = timers.iter().cloned().fold(0, |acc, x| acc + x);
+            println!("Part 1: {}", num1);
+        }
         let replicate = timers[0];
         for i in 0..8 { timers[i] = timers[i + 1]; }
         timers[6] += replicate;
@@ -20,8 +24,8 @@ fn main() -> () {
     }
 
     // Get the number of fish
-    let num = timers.iter().fold(0, |acc, x| acc + x);
-    println!("{}", num);
+    let num2 = timers.iter().fold(0, |acc, x| acc + x);
+    println!("Part 2: {}", num2);
 }
 
 fn read_lines<P>(filename: P) -> Vec<usize> where P: AsRef<Path> {
