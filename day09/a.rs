@@ -28,7 +28,7 @@ fn min_adjacent_nums(grid: &Vec<Vec<u8>>, row: usize, col: usize) -> u8 {
 }
 
 fn read_lines<P>(filename: P) -> Vec<Vec<u8>> where P: AsRef<Path> {
-    // Converts input lines to 2D vector of bool values
+    // Converts input lines to 2D vector of integers
     let file = File::open(filename).expect("Oh no");
     let lines = io::BufReader::new(file).lines();
 
