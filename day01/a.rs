@@ -1,29 +1,26 @@
-use std::io;
-use io::Stdin;
+use std::io::{self, BufRead};
+use std::fs::File;
+use std::path::Path;
 
 fn main() -> () {
-    let stdin = io::stdin();
+    let nums = read_lines("input.txt");
 
-    // Counting # of times current line value greater than last
-    let mut prev = get_next_int(&stdin);
-    let mut tot = 0;
-
-    for _ in 0..1999 {  // Remove 1 from number of lines
-        let curr = get_next_int(&stdin);
-        if curr > prev {
-            tot += 1;
-        }
-        prev = curr;
+    // Count # of times current value greater than last
+    let mut prev = nums[0];
+    let mut total = 0;
+    for num in nums[1..].iter() {  // Already seen first num
+        if num > &prev { total += 1; }
+        prev = *num;
     }
-
-    println!("{}", tot);
+    println!("{}", total);
 }
 
-fn get_next_int(stdin: &Stdin) -> i32 {
-    let mut text = String::new();
-    stdin.read_line(&mut text).expect("Oh no");
-    // println!("Got string {}", text);
-    let num = text.trim().parse::<i32>().unwrap();
-    // println!("Got num {}", num);
-    return num;
+fn read_lines<P>(filename: P) -> Vec<i32> where P: AsRef<Path> {
+    // Converts input lines to vector of integers
+    let file = File::open(filename).expect("Oh no");
+    let lines = io::BufReader::new(file).lines();
+
+    return lines
+    .map(|l| l.unwrap().parse::<i32>().unwrap())
+    .collect::<Vec<_>>();
 }
