@@ -3,16 +3,24 @@ use std::fs::File;
 use std::path::Path;
 
 fn main() -> () {
-    let sizes = read_lines("input.txt");
+    let test_configs = read_lines("input.txt");
 
+    // Known digit if it has the following length
     let uniques = vec![2, 3, 4, 7];
-    let total = sizes.iter().filter(|s| uniques.contains(&s)).count();
 
+    // We only care about the lengths across all test cases
+    let sizes = test_configs.into_iter()
+    .flatten()
+    .map(|x| x.len())
+    .collect::<Vec<_>>();
+
+    // Count only those having the desired length
+    let total = sizes.iter().filter(|s| uniques.contains(&s)).count();
     println!("{}", total);
 }
 
-fn read_lines<P>(filename: P) -> Vec<usize> where P: AsRef<Path> {
-    // Converts each test digit into it's length, and returns as a single vector
+fn read_lines<P>(filename: P) -> Vec<Vec<String>> where P: AsRef<Path> {
+    // Converts each test set into string vectors, returning a vector of test sets
     
     let file = File::open(filename).unwrap();
     let lines = io::BufReader::new(file).lines();
@@ -26,10 +34,10 @@ fn read_lines<P>(filename: P) -> Vec<usize> where P: AsRef<Path> {
 
         let second = iter.next().unwrap()
         .split_whitespace()
-        .map(|x| x.len())
+        .map(|x| x.to_string())
         .collect::<Vec<_>>();
 
         configs.push(second);
     }
-    return configs.into_iter().flatten().collect::<Vec<_>>();
+    return configs;
 }
