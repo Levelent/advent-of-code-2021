@@ -1,38 +1,39 @@
-use std::io;
-use io::Stdin;
+use std::io::{self, BufRead};
+use std::fs::File;
+use std::path::Path;
 
 fn main() -> () {
-    let stdin = io::stdin();
+    let commands = read_lines("input.txt");
 
+    // Change pos, depth and aim by command value
     let mut pos = 0;
     let mut depth = 0;
     let mut aim = 0;
 
-    // Change position and depth by given value, depending on command
-    for _ in 0..1000 {
-        let (cmd, num) = get_next_command(&stdin);
-        if cmd == "forward" {
-            pos += num;
-            depth += aim * num;
-        } else if cmd == "down" {
-            aim += num;
-        } else if cmd == "up" {
-            aim -= num;
-        } else {
-            panic!();
+    for (name, num) in commands {
+        match name.as_str() {
+            "forward" => { 
+                pos += num; 
+                depth += aim * num;
+            },
+            "down" => { aim += num; },
+            "up" => { aim -= num; },
+            _ => { panic!(); }
         }
-        // println!("{}, {}, {}", pos, depth, aim);
     }
     println!("{}", pos * depth);
 }
 
-fn get_next_command(stdin: &Stdin) -> (String, i32) {
-    let mut text = String::new();
-    stdin.read_line(&mut text).expect("Oh no");
-    // println!("Got string {}", text);
-    let v = text.trim().split(" ").collect::<Vec<&str>>();
-    
-    let num = v[1].parse::<i32>().unwrap();
-    // println!("Got num {}", num);
-    return (v[0].to_string(), num);
+fn read_lines<P>(filename: P) -> Vec<(String, i32)> where P: AsRef<Path> {
+    // Converts input lines to vector of string, int pairs
+    let file = File::open(filename).unwrap();
+    let lines = io::BufReader::new(file).lines();
+
+    let mut commands = vec![];
+    for line in lines {
+        let text = line.unwrap();
+        let v = text.split_whitespace().collect::<Vec<_>>();
+        commands.push((v[0].to_string(), v[1].parse::<i32>().unwrap()));
+    }
+    return commands;
 }
