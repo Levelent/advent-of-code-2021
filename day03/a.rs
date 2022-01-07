@@ -37,15 +37,10 @@ fn read_lines<P>(filename: P) -> Vec<Vec<bool>> where P: AsRef<Path> {
     let file = File::open(filename).expect("Oh no");
     let lines = io::BufReader::new(file).lines();
 
-    let mut bools_vec = vec![];
-    for line in lines {
-        let mut bools = vec![];
-        if let Ok(bitstring) = line {
-            for bit in bitstring.chars() {
-                bools.push(bit == '1');
-            }
-        }
-        bools_vec.push(bools);
-    }
-    return bools_vec;
+    // Cells replaced with true for 1 and false for 0
+    return lines.map(
+        |s| s.unwrap().chars().map(
+            |c| c == '1'
+        ).collect::<Vec<_>>()
+    ).collect::<Vec<_>>();
 }
