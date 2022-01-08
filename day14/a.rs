@@ -6,41 +6,41 @@ use std::collections::HashMap;
 fn main() -> () {
     let (mut template, rules) = read_lines("input.txt");
 
-    println!("{:?}", template);
-    println!("{:?}", rules);
-
+    // Run naive simulation
     for _ in 0..10 {
+        // Take all two-character slices, and append to new string
         let mut new_template = vec![];
         for i in 0..template.len()-1 {
             let comp = &template[i..i+2];
-            new_template.push(template[i]);
+            new_template.push(template[i]); // Push current letter
             if rules.contains_key(comp) {
-                new_template.push(rules[comp]);
+                new_template.push(rules[comp]); // Push new middle letter, if needed
             }
         }
-        // Push last letter
-        new_template.push(template[template.len()-1]);
-        
+        new_template.push(template[template.len()-1]); // Push last letter
         template = new_template;
-        // println!("{:?}", template);
     }
 
+    // Get frequency hashmap of characters
     let freqs : HashMap<&char, usize> = template.iter()
     .fold(
         HashMap::new(), |mut m, c| {*m.entry(c).or_default() += 1; m}
     );
+
     println!("{}", freqs.values().max().unwrap() - freqs.values().min().unwrap());
 }
 
 fn read_lines<P>(filename: P) -> (Vec<char>, HashMap<Vec<char>, char>) where P: AsRef<Path> {
-    // Converts input lines to vector of vector pairs
+    // Converts input lines
     let file = File::open(filename).unwrap();
     let mut lines = io::BufReader::new(file).lines();
 
+    // Convert initial template to a character vector
     let template : Vec<char> = lines.next().unwrap().unwrap().chars().collect();
 
-    lines.next();
+    lines.next(); // Ignore the blank line
 
+    // Split rules into left and right parts, then convert to hashmap
     let rules = lines.map(
         |l| l.unwrap()
         .split_whitespace()
